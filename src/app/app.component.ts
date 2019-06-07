@@ -8,8 +8,12 @@ import { Component, OnInit } from '@angular/core'
 export class AppComponent implements OnInit {
   ctxt: CanvasRenderingContext2D
   cw = 30 //cell width/height
-  cell_offset_x = -9
-  cell_offset_y = -9
+  width: number
+  cells: boolean[]
+  cell_offset_x = -4
+  cell_offset_y = 6
+  line_color = '#888'
+  box_color = '#555'
 
   canvClick(me: MouseEvent) {
     console.log('Point:', me.offsetX, me.offsetY)
@@ -20,6 +24,7 @@ export class AppComponent implements OnInit {
   cellClick(x, y){
     console.log('Cell:', x, y)
     const {x: px, y: py} = this.cellToCanv(x, y)
+    this.ctxt.fillStyle = this.box_color
     this.ctxt.fillRect(px + 5, py + 5, this.cw - 10, this.cw -10)
   }
 
@@ -41,9 +46,10 @@ export class AppComponent implements OnInit {
     const canvas = <HTMLCanvasElement>document.getElementById('canvas')
     this.ctxt = canvas.getContext('2d')
     const w = canvas.width
+    this.width = w
     const h = canvas.height
 
-    this.ctxt.strokeStyle = "black"
+    this.ctxt.strokeStyle = this.line_color
 
     for(let x=this.cw;x<=w;x+=this.cw){
       this.ctxt.moveTo(0.5 + x, 0)
@@ -60,5 +66,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.initCanvas()
+    this.cells = new Array<boolean>(Math.floor(this.width/this.cw))
   }
 }
