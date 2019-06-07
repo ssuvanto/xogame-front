@@ -28,6 +28,11 @@ export class AppComponent implements OnInit {
     this.ctxt.fillRect(px + 5, py + 5, this.cw - 10, this.cw -10)
   }
 
+  moveGrid(x, y){
+    this.cell_offset_x += x
+    this.cell_offset_y += y
+  }
+
   //Returns the cell based on pixel coordinates x,y
   canvToCell(x, y) {
     const x_cell = Math.floor(x/this.cw) + this.cell_offset_x

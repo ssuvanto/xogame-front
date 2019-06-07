@@ -17,6 +17,12 @@
       (click)="canvClick($event)"></canvas>
     </div>
   </div>
+  <div class="controls">
+    <button class="grid-move" (click)="moveGrid(0, -1)">&#9650;</button>
+    <button class="grid-move" (click)="moveGrid(0, 1)">&#9660;</button>
+    <button class="grid-move" (click)="moveGrid(-1, 0)">&#9664;</button>
+    <button class="grid-move" (click)="moveGrid(1, 0)">&#9654;</button>
+  </div>
 </div>
 
 
