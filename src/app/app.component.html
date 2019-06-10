@@ -1,1 +1,4 @@
-<router-outlet></router-outlet>
+<app-header [displayname]="user" (login)="onLogin($event)"></app-header>
+<main>
+    <router-outlet></router-outlet>
+</main>

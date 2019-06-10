@@ -1,0 +1,58 @@
+.header {
+    height: 60px;
+    background-color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+        margin: 0 20px;
+        letter-spacing: 2px;
+        font-family: monospace;
+        font-size: 32px;
+        color: #224;
+    }
+
+    .login {
+        font-size: 14px;
+
+        input {
+            margin-right: 20px;
+            border: 1px solid #dde;
+            border-radius: 5px;
+            padding: 5px;
+            font-family: monospace;
+            font-size: 18px;
+        }
+    }
+
+    .logged {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+
+        span {
+            margin-right: 10px;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-family: monospace;
+            margin-right: 10px;
+        }
+    }
+
+    button {
+        padding: 7px;
+        margin-right: 10px;
+        border: 1px solid #bbc;
+        background-color: #eef;
+        border-radius: 5px;
+
+        &:active {
+            border-color: #aab;
+            background-color: #dde;
+            outline: none;
+        }
+    }
+}
