@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core'
-import { timingSafeEqual } from 'crypto';
+import { timingSafeEqual } from 'crypto'
 
 @Component({
   selector: 'app-root',
@@ -7,9 +7,5 @@ import { timingSafeEqual } from 'crypto';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  user = ''
 
-  onLogin(info: any){
-    this.user = info.uname
-  }
 }
