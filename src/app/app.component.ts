@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core'
+import { timingSafeEqual } from 'crypto';
 
 @Component({
   selector: 'app-root',
@@ -9,74 +10,100 @@ export class AppComponent implements OnInit {
   ctxt: CanvasRenderingContext2D
   cw = 30 //cell width/height
   width: number
-  game_width: 100
-  game_height: 100
+  game_width = 100
+  game_height = 100
   cells: CellContent[][]
-  cell_offset_x = -4
-  cell_offset_y = 6
+  cell_offset_x = 15
+  cell_offset_y = -12
   line_color = '#888'
   box_color = '#555'
 
   canvClick(me: MouseEvent) {
     console.log('Point:', me.offsetX, me.offsetY)
-    const {x, y} = this.canvToCell(me.offsetX, me.offsetY)
+    const {x, y} = this.pixToScreenCell(me.offsetX, me.offsetY)
     this.cellClick(x, y)
   }
 
   cellClick(x: number, y: number){
-    console.log('Cell:', x, y)
-    //add to cells
+    console.log('Screen-space cell:', x, y)
+    const gc = this.screenCellToGameCell(x, y)
+    console.log('Game-space cell:', gc.x, gc.y)
+    if(this.getGameCell(gc.x, gc.y) === CellContent.Empty){
+      this.setGameCell(gc.x, gc.y, CellContent.X)
+    } else {
+      this.setGameCell(gc.x, gc.y, CellContent.Empty)
+    }
+    this.renderCells()
   }
 
-  setCell(x: number , y: number, val: CellContent){
-    const arrayX = x + Math.floor(this.game_width/2)
-    const arrayY = y + Math.floor(this.game_height/2)
-    if(arrayX >= this.game_width || arrayX < 0 || arrayY >= this.game_height || arrayY < 0){
-      console.error('setCell: attempting to play outside field')
+  //Sets the game-space cell to the provided value
+  setGameCell(x: number , y: number, val: CellContent){
+    const ac = this.gameCellToArrayCell(x, y)
+    console.log('Array-space cell:', ac.x, ac.y)
+    if(ac.x >= this.game_width || ac.x < 0 || ac.y >= this.game_height || ac.y < 0){
+      console.log('setCell: attempting to play outside field')
       return
     }
-    this.cells[x][y] = val
+    this.cells[ac.x][ac.y] = val
   }
 
-  getCell(x: number, y: number): CellContent {
-    const arrayX = x + Math.floor(this.game_width/2)
-    const arrayY = y + Math.floor(this.game_height/2)
-    if(arrayX >= this.game_width || arrayX < 0 || arrayY >= this.game_height || arrayY < 0){
-      console.error('setCell: attempting to play outside field')
+  //Returns the game-space cell content at the provided x,y
+  getGameCell(x: number, y: number): CellContent {
+    const ac = this.gameCellToArrayCell(x, y)
+    if(ac.x >= this.game_width || ac.x < 0 || ac.y >= this.game_height || ac.y < 0){
+      console.log('getCell: attempting to get from outside field')
       return
     }
-    return this.cells[x][y]
+    return this.cells[ac.x][ac.y]
   }
 
   moveGrid(x: number, y: number){
     this.cell_offset_x += x
     this.cell_offset_y += y
+    this.renderCells()
   }
 
-  //Returns the cell based on pixel coordinates x,y
-  canvToCell(x: number, y: number) {
-    const x_cell = Math.floor(x/this.cw) + this.cell_offset_x
-    const y_cell = Math.floor(y/this.cw) + this.cell_offset_y
+  //Returns the array-space cell based on game-space cell
+  gameCellToArrayCell(x: number, y: number) {
+    return {
+      x: x + Math.floor( this.game_width  / 2 ),
+      y: y + Math.floor( this.game_height / 2 )
+    }
+  }
+
+  //Returns the game-space cell based on screen-space cell
+  screenCellToGameCell(x: number, y: number) {
+    return {x: x + this.cell_offset_x, y: y + this.cell_offset_y}
+  }
+
+  //Returns the screen-space cell based on pixel coordinates x,y
+  pixToScreenCell(x: number, y: number) {
+    const x_cell = Math.floor(x/this.cw)
+    const y_cell = Math.floor(y/this.cw)
     return {x: x_cell ,y: y_cell}
   }
 
-  //Returns the top left pixel coordinates of the cell at x,y
-  cellToCanv(x: number, y: number) {
-    const x_pix = (x - this.cell_offset_x) * this.cw
-    const y_pix = (y - this.cell_offset_y) * this.cw
+  //Returns the top left pixel coordinates of the screen-space cell at x,y
+  screenCellToPix(x: number, y: number) {
+    const x_pix = x  * this.cw
+    const y_pix = y  * this.cw
     return {x: x_pix, y: y_pix}
   }
 
   renderCells() {
+    //Screen-space width/height
     const num = Math.floor(this.width/this.cw)
-    const subCells = []
+
+    //Loop through screen-space cells
     for(let x=0;x<num;x++){
-      subCells[x] = []
       for(let y=0;y<num;y++){
-        if(this.cells[this.cell_offset_x + x][this.cell_offset_y + y] === CellContent.X){
-          const {x: px, y: py} = this.cellToCanv(x, y)
+        const p = this.screenCellToPix(x, y)
+        //Clear anything that might have already been there
+        this.ctxt.clearRect(p.x + 5, p.y + 5, this.cw - 10, this.cw - 10)
+        const gc = this.screenCellToGameCell(x, y)
+        if(this.getGameCell(gc.x, gc.y) === CellContent.X){
           this.ctxt.fillStyle = this.box_color
-          this.ctxt.fillRect(px + 5, py + 5, this.cw - 10, this.cw -10)
+          this.ctxt.fillRect(p.x + 5, p.y + 5, this.cw - 10, this.cw -10)
         }
       }
     }
