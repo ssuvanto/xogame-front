@@ -1,0 +1,26 @@
+<div class="game">
+  <div class="game-view">
+    <div class="column-bar">
+      <div *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]; let i=index;" 
+        class="colrow-num col-num" [style.width.px]="cw">
+        {{ cell_offset_x + i}}
+      </div>
+    </div>
+    <div class="row">
+      <div class="row-bar">
+        <div *ngFor="let n of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]; let i=index;" 
+          class="colrow-num row-num" [style.height.px]="cw">
+          {{ cell_offset_y + i }}
+        </div>
+      </div>
+      <canvas id="canvas" width="600px" height="600px" 
+      (click)="canvClick($event)"></canvas>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="grid-move" (click)="moveGrid(0, -1)">&#9650;</button>
+    <button class="grid-move" (click)="moveGrid(0, 1)">&#9660;</button>
+    <button class="grid-move" (click)="moveGrid(-1, 0)">&#9664;</button>
+    <button class="grid-move" (click)="moveGrid(1, 0)">&#9654;</button>
+  </div>
+</div>
