@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'app-game',
@@ -6,6 +8,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./game.component.scss']
 })
 export class GameComponent implements OnInit {
+
+  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+
   ctxt: CanvasRenderingContext2D
   cw = 30 //cell width/height
   width: number
@@ -132,13 +137,22 @@ export class GameComponent implements OnInit {
 
   ngOnInit() {
     this.initCanvas()
-    this.cells = []
+    /*this.cells = []
     for(let x=0;x<this.game_width;x++){
       this.cells[x] = []
       for(let y=0;y<this.game_height;y++){
         this.cells[x][y] = CellContent.Empty
       }
-    }
+    }*/
+    let id: string = null
+    this.route.paramMap.subscribe((params: ParamMap) => {
+      id = params.get('id')
+    })
+    console.log(id)
+    this.http.get('http://localhost:4444/api/games/'+id).subscribe(res => {
+      this.cells = res['state']
+      this.renderCells()
+    })
   }
 }
 
