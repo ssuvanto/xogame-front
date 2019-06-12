@@ -19,8 +19,8 @@ export class GameComponent implements OnInit, OnDestroy {
   game_width = 100
   game_height = 100
   cells: CellContent[][]
-  cell_offset_x = 15
-  cell_offset_y = -12
+  cell_offset_x = 25
+  cell_offset_y = 25
   line_color = '#888'
   box_color = '#555'
 
@@ -30,15 +30,15 @@ export class GameComponent implements OnInit, OnDestroy {
 
 
   canvClick(me: MouseEvent) {
-    console.log('Point:', me.offsetX, me.offsetY)
+    //console.log('Point:', me.offsetX, me.offsetY)
     const {x, y} = this.pixToScreenCell(me.offsetX, me.offsetY)
     this.cellClick(x, y)
   }
 
   cellClick(x: number, y: number){
-    console.log('Screen-space cell:', x, y)
+    //console.log('Screen-space cell:', x, y)
     const gc = this.screenCellToGameCell(x, y)
-    console.log('Game-space cell:', gc.x, gc.y)
+    //console.log('Game-space cell:', gc.x, gc.y)
     if(this.getGameCell(gc.x, gc.y) === CellContent.Empty){
       this.setGameCell(gc.x, gc.y, CellContent.X)
     } else {
@@ -54,7 +54,7 @@ export class GameComponent implements OnInit, OnDestroy {
   //Sets the game-space cell to the provided value
   setGameCell(x: number , y: number, val: CellContent){
     const ac = this.gameCellToArrayCell(x, y)
-    console.log('Array-space cell:', ac.x, ac.y)
+    //console.log('Array-space cell:', ac.x, ac.y)
     if(ac.x >= this.game_width || ac.x < 0 || ac.y >= this.game_height || ac.y < 0){
       console.log('setCell: attempting to play outside field')
       return
@@ -73,6 +73,17 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   moveGrid(x: number, y: number){
+    const num = Math.floor(this.width/this.cw)
+    const w = Math.floor(this.game_width/2)
+    const h = Math.floor(this.game_height/2)
+    const lx = this.cell_offset_x + x
+    const rx = lx + num
+    const ty = this.cell_offset_y + y
+    const by = ty + num
+    if(lx < -w || rx > w || ty < -h || by > h){
+      //console.log('cannot move further')
+      return
+    }
     this.cell_offset_x += x
     this.cell_offset_y += y
     this.renderCells()
@@ -173,7 +184,6 @@ export class GameComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe((params: ParamMap) => {
       id = params.get('id')
     })
-    console.log(id)
     this.http.get('http://localhost:4444/api/games/'+id).subscribe(res => {
       this.cells = res['state']
       this.renderCells()
