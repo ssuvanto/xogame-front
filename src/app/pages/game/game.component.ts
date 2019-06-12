@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core'
+import { HttpClient } from '@angular/common/http'
+import { ActivatedRoute, ParamMap } from '@angular/router'
+
+declare var SockJS
 
 @Component({
   selector: 'app-game',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.scss']
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnDestroy {
 
   constructor(private route: ActivatedRoute, private http: HttpClient) {}
 
@@ -21,6 +23,11 @@ export class GameComponent implements OnInit {
   cell_offset_y = -12
   line_color = '#888'
   box_color = '#555'
+
+  sockopen = false
+  sock = null
+  messages = []
+
 
   canvClick(me: MouseEvent) {
     console.log('Point:', me.offsetX, me.offsetY)
@@ -37,6 +44,10 @@ export class GameComponent implements OnInit {
     } else {
       this.setGameCell(gc.x, gc.y, CellContent.Empty)
     }
+    this.sock.send(JSON.stringify({
+      type: 'mark',
+      data: {x: x, y: y}
+    }))
     this.renderCells()
   }
 
@@ -135,6 +146,20 @@ export class GameComponent implements OnInit {
     this.ctxt.stroke()
   }
 
+  sendMsg(msg) {
+    if(msg){
+      this.sock.send(JSON.stringify({type: 'echo', data: msg}))
+    }
+  }
+
+  sendMark(x, y){
+    if(x && y){
+      this.sock.send(JSON.stringify(
+        {type: 'mark', data: {x: x, y: y}}
+      ))
+    }
+  }
+
   ngOnInit() {
     this.initCanvas()
     /*this.cells = []
@@ -153,8 +178,39 @@ export class GameComponent implements OnInit {
       this.cells = res['state']
       this.renderCells()
     })
+
+    console.log('Opening socket...')
+    this.sock = new SockJS('http://localhost:4444/sock')
+    this.sock.onopen = () => {
+      console.log('Socket opened')
+      this.sockopen = true
+    }
+    this.sock.onmessage = (m) => {
+      m = JSON.parse(m.data)
+      switch(m.type){
+        case 'echo':
+          this.messages.push(m.data)
+          break
+        case 'markok':
+          this.messages.push('Mark ok at '+m.data.x+', '+m.data.y)
+          break
+        default:
+          console.log('Message with unknown type')
+      }
+    }
+    this.sock.onclose = () => {
+      console.log('Socket closed')
+    }
+  }
+
+  ngOnDestroy() {
+    if(this.sockopen){
+      this.sock.close()
+    }
   }
 }
+
+
 
 enum CellContent {
   Empty,
