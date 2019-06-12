@@ -16,7 +16,15 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   sendMsg(msg) {
     if(msg){
-      this.sock.send(msg)
+      this.sock.send(JSON.stringify({type: 'echo', data: msg}))
+    }
+  }
+
+  sendMark(x, y){
+    if(x && y){
+      this.sock.send(JSON.stringify(
+        {type: 'mark', data: {x: x, y: y}}
+      ))
     }
   }
 
@@ -28,8 +36,17 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.sockopen = true
     }
     this.sock.onmessage = (m) => {
-      console.log('Received',m.data)
-      this.messages.push(m.data)
+      m = JSON.parse(m.data)
+      switch(m.type){
+        case 'echo':
+          this.messages.push(m.data)
+          break
+        case 'markok':
+          this.messages.push('Mark ok at '+m.data.x+', '+m.data.y)
+          break
+        default:
+          console.log('Message with unknown type')
+      }
     }
     this.sock.onclose = () => {
       console.log('Socket closed')

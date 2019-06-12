@@ -3,6 +3,11 @@
     <h1>Welcome back!</h1>
     <a routerLink="/game/0">Start new game</a>
 </div>
+<div>
+    X:<input #x type="number" size="2">
+    Y:<input #y type="number" size="2">
+    <button (click)="sendMark(x.value, y.value)">Send</button>
+</div>
 <input #msgin type="text" (keyup.enter)="sendMsg(msgin.value)">
 <div class="msgbox">
     <h5>Messages:</h5>
