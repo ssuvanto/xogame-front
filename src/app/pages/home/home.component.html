@@ -3,3 +3,8 @@
     <h1>Welcome back!</h1>
     <a routerLink="/game/0">Start new game</a>
 </div>
+<input #msgin type="text" (keyup.enter)="sendMsg(msgin.value)">
+<div class="msgbox">
+    <h5>Messages:</h5>
+    <p *ngFor="let m of messages" class="msg">{{ m }}</p>
+</div>
