@@ -19,10 +19,12 @@ export class GameComponent implements OnInit, OnDestroy {
   game_width = 100
   game_height = 100
   cells: CellContent[][]
-  cell_offset_x = 25
-  cell_offset_y = 25
+  cell_offset_x = 0
+  cell_offset_y = 0
   line_color = '#888'
   box_color = '#555'
+
+  gameid: number
 
   sockopen = false
   sock = null
@@ -44,10 +46,8 @@ export class GameComponent implements OnInit, OnDestroy {
     } else {
       this.setGameCell(gc.x, gc.y, CellContent.Empty)
     }
-    this.sock.send(JSON.stringify({
-      type: 'mark',
-      data: {x: x, y: y}
-    }))
+    const ac = this.gameCellToArrayCell(gc.x, gc.y)
+    this.sendMark(ac.x, ac.y)
     this.renderCells()
   }
 
@@ -166,7 +166,7 @@ export class GameComponent implements OnInit, OnDestroy {
   sendMark(x, y){
     if(x && y){
       this.sock.send(JSON.stringify(
-        {type: 'mark', data: {x: x, y: y}}
+        {type: 'mark', data: {id: this.gameid, x: x, y: y}}
       ))
     }
   }
@@ -180,11 +180,10 @@ export class GameComponent implements OnInit, OnDestroy {
         this.cells[x][y] = CellContent.Empty
       }
     }*/
-    let id: string = null
     this.route.paramMap.subscribe((params: ParamMap) => {
-      id = params.get('id')
+      this.gameid = parseInt(params.get('id'))
     })
-    this.http.get('http://localhost:4444/api/games/'+id).subscribe(res => {
+    this.http.get('http://localhost:4444/api/games/'+this.gameid).subscribe(res => {
       this.cells = res['state']
       this.renderCells()
     })
