@@ -23,6 +23,9 @@ export class GameComponent implements OnInit, OnDestroy {
   cell_offset_y = 0
   line_color = '#888'
   box_color = '#555'
+  temp_color = '#a33'
+
+  tempCell = null
 
   gameid: number
 
@@ -32,7 +35,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
 
   canvClick(me: MouseEvent) {
-    //console.log('Point:', me.offsetX, me.offsetY)
+    console.log('Point:', me.offsetX, me.offsetY)
     const {x, y} = this.pixToScreenCell(me.offsetX, me.offsetY)
     this.cellClick(x, y)
   }
@@ -42,24 +45,39 @@ export class GameComponent implements OnInit, OnDestroy {
     const gc = this.screenCellToGameCell(x, y)
     //console.log('Game-space cell:', gc.x, gc.y)
     if(this.getGameCell(gc.x, gc.y) === CellContent.Empty){
-      this.setGameCell(gc.x, gc.y, CellContent.X)
-    } else {
-      this.setGameCell(gc.x, gc.y, CellContent.Empty)
+      //this.setGameCell(gc.x, gc.y, CellContent.X)
+      this.setTempGameCell(gc.x, gc.y)
+      const ac = this.gameCellToArrayCell(gc.x, gc.y)
+      this.sendMark(ac.x, ac.y)
+      this.renderCells()
     }
-    const ac = this.gameCellToArrayCell(gc.x, gc.y)
-    this.sendMark(ac.x, ac.y)
+  }
+
+  //sets the temporarily rendered cell that is awaiting confirmation
+  setTempGameCell(x: number, y: number) {
+    this.tempCell = {x: x, y: y}
+    console.log(this.tempCell)
+    this.renderCells()
+  }
+
+  clearTempGameCell(){
+    this.tempCell = null
     this.renderCells()
   }
 
   //Sets the game-space cell to the provided value
   setGameCell(x: number , y: number, val: CellContent){
     const ac = this.gameCellToArrayCell(x, y)
+    this.setArrayCell(ac.x, ac.y, val)    
+  }
+
+  setArrayCell(x: number, y: number, val: CellContent){
     //console.log('Array-space cell:', ac.x, ac.y)
-    if(ac.x >= this.game_width || ac.x < 0 || ac.y >= this.game_height || ac.y < 0){
+    if(x >= this.game_width || x < 0 || y >= this.game_height || y < 0){
       console.log('setCell: attempting to play outside field')
       return
     }
-    this.cells[ac.x][ac.y] = val
+    this.cells[x][y] = val
   }
 
   //Returns the game-space cell content at the provided x,y
@@ -102,6 +120,10 @@ export class GameComponent implements OnInit, OnDestroy {
     return {x: x + this.cell_offset_x, y: y + this.cell_offset_y}
   }
 
+  gameCellToScreenCell(x: number, y: number) {
+    return {x: x - this.cell_offset_x, y: y - this.cell_offset_y}
+  }
+
   //Returns the screen-space cell based on pixel coordinates x,y
   pixToScreenCell(x: number, y: number) {
     const x_cell = Math.floor(x/this.cw)
@@ -132,6 +154,15 @@ export class GameComponent implements OnInit, OnDestroy {
           this.ctxt.fillRect(p.x + 5, p.y + 5, this.cw - 10, this.cw -10)
         }
       }
+    }
+
+    //Render temp cell
+    if(this.tempCell){
+      this.ctxt.fillStyle = this.temp_color
+      const sc = this.gameCellToScreenCell(this.tempCell.x, this.tempCell.y)
+      const tp = this.screenCellToPix(sc.x, sc.y)
+      console.log(tp.x, tp.y)
+      this.ctxt.fillRect(tp.x + 5, tp.y + 5, this.cw - 10, this.cw - 10)
     }
   }
 
@@ -171,6 +202,12 @@ export class GameComponent implements OnInit, OnDestroy {
     }
   }
 
+  markOk(data) {
+    console.log('Mark ok at '+data.x+', '+data.y)
+    this.setArrayCell(data.x, data.y, CellContent.X)
+    this.clearTempGameCell()
+  }
+
   ngOnInit() {
     this.initCanvas()
     /*this.cells = []
@@ -201,7 +238,7 @@ export class GameComponent implements OnInit, OnDestroy {
           this.messages.push(m.data)
           break
         case 'markok':
-          this.messages.push('Mark ok at '+m.data.x+', '+m.data.y)
+          this.markOk(m.data)
           break
         default:
           console.log('Message with unknown type')
