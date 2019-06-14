@@ -221,7 +221,7 @@ export class GameComponent implements OnInit, OnDestroy {
       this.gameid = parseInt(params.get('id'))
     })
     this.http.get('http://localhost:4444/api/games/'+this.gameid).subscribe(res => {
-      this.cells = res['state']
+      this.cells = res['board']
       this.renderCells()
     })
 
