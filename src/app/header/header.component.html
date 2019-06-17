@@ -1,15 +1,16 @@
 <div class="header">
   <h1>XOGame</h1>
-  <div *ngIf="!user.name" class="login">
+  <div *ngIf="!curr_user" class="login">
       <label for="login-user">User: </label>
       <input type="text" id="login-user" size="12" #un>
       <label for="login-pass">Password: </label>
       <input type="password" id="login-pass" size="12" #pw>
       <button (click)="doLogin(un.value, pw.value)">Log In</button>
   </div>
-  <div *ngIf="user.name" class="logged">
+  <div *ngIf="curr_user" class="logged">
     <span>Logged in as: </span>
-    <h2>{{ user.name }}</h2>
+    <h2>{{ curr_user.name }}</h2>
     <button (click)="logout()">Log out</button>
+    Token: {{ curr_user.token }}
   </div>
 </div>

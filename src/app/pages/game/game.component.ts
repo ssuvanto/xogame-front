@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
-import { HttpClient } from '@angular/common/http'
+import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { ActivatedRoute, ParamMap } from '@angular/router'
+import { UserService, User } from 'src/app/user.service';
 
 declare var SockJS
 
@@ -11,7 +12,10 @@ declare var SockJS
 })
 export class GameComponent implements OnInit, OnDestroy {
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+  constructor(private route: ActivatedRoute, private http: HttpClient,
+    private user: UserService) {}
+
+  theuser: User
 
   ctxt: CanvasRenderingContext2D
   cw = 30 //cell width/height
@@ -209,6 +213,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.theuser = this.user.getUser()
     this.initCanvas()
     /*this.cells = []
     for(let x=0;x<this.game_width;x++){
@@ -220,7 +225,11 @@ export class GameComponent implements OnInit, OnDestroy {
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.gameid = parseInt(params.get('id'))
     })
-    this.http.get('http://localhost:4444/api/games/'+this.gameid).subscribe(res => {
+    this.http.get('http://localhost:4444/api/games/'+this.gameid, {
+      headers: new HttpHeaders({
+        'token': this.theuser.token
+      })
+    }).subscribe(res => {
       this.cells = res['board']
       this.renderCells()
     })
