@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
-import { UserService } from 'src/app/user.service'
+import { UserService, User } from 'src/app/user.service'
 
 @Component({
   selector: 'app-home',
