@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { ActivatedRoute, ParamMap } from '@angular/router'
-import { UserService, User } from 'src/app/user.service';
+import { UserService } from 'src/app/user.service';
 
 declare var SockJS
 
@@ -15,7 +15,8 @@ export class GameComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute, private http: HttpClient,
     private user: UserService) {}
 
-  theuser: User
+  loading = true
+  err_msg: string
 
   ctxt: CanvasRenderingContext2D
   cw = 30 //cell width/height
@@ -213,26 +214,28 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.theuser = this.user.getUser()
-    this.initCanvas()
-    /*this.cells = []
-    for(let x=0;x<this.game_width;x++){
-      this.cells[x] = []
-      for(let y=0;y<this.game_height;y++){
-        this.cells[x][y] = CellContent.Empty
-      }
-    }*/
+    if(!this.user.user){
+      //not logged in
+      return
+    }
     this.route.paramMap.subscribe((params: ParamMap) => {
       this.gameid = parseInt(params.get('id'))
     })
     this.http.get('http://localhost:4444/api/games/'+this.gameid, {
       headers: new HttpHeaders({
-        'token': this.theuser.token
+        'token': this.user.user.token
       })
-    }).subscribe(res => {
-      this.cells = res['board']
-      this.renderCells()
-    })
+    }).subscribe(
+      res => {
+        this.initCanvas()
+        this.cells = res['board']
+        this.loading = false
+        this.renderCells()
+      },
+      err => {
+        this.err_msg = err.error.error
+      }
+    )
 
     console.log('Opening socket...')
     this.sock = new SockJS('http://localhost:4444/sock')

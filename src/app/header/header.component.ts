@@ -23,6 +23,7 @@ export class HeaderComponent {
           if(res.status === 200){
             this.login_error = null
             this.user.user = {name: uname, token: res.body['token']}
+            window.location.reload()
           }
         },
         err => {
