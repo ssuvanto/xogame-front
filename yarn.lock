@@ -377,6 +377,11 @@
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.16.tgz#50a4755f8e33edacd9c406729e9b930d2451902a"
   integrity sha512-lMC2G0ItF2xv4UCiwbJGbnJlIuUixHrioOhNGHSCsYCJ8l4t9hMCUimCytvFv7qy6AfSzRxhRHoGa+UqaqwyeA==
 
+"@types/sockjs-client@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/sockjs-client/-/sockjs-client-1.1.1.tgz#1ef133b5a79d51447a93ce16164706c0164b5548"
+  integrity sha512-DaTdN4kfPNxu0otmQlxhmYeCjtY8cHmJsU6LqiFOrhytIkx8Txq06PwAWYzha7nMkEyju44a3NDpqCKiHn/NZQ==
+
 "@types/source-list-map@*":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
@@ -579,9 +584,9 @@ acorn-dynamic-import@^4.0.0:
   integrity sha512-d3OEjQV4ROpoflsnUA8HozoIR504TFxNivYEUi6uwz0IYhBkTDXGuWlNdMtybRt3nqVx/L6XqMt0FxkXuWKZhw==
 
 acorn@^6.0.5:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.1.1.tgz#7d25ae05bb8ad1f9b699108e1094ecd7884adc1f"
-  integrity sha512-jPTiwtOxaHNaAPg/dmrJ/beuzLRnXtB0kQPQ8JpotKJgTB6rX6c8mlf315941pyjBSaPg8NHXS9fhP4u17DpGA==
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.4.1.tgz#531e58ba3f51b9dacb9a6646ca4debf5b14ca474"
+  integrity sha512-ZVA9k326Nwrj3Cj9jlh3wGFutC2ZornPNARZwsNYqQYgN0EsV2d53w5RN/co65Ohn4sUAUtb1rSUAOD6XN9idA==
 
 adm-zip@^0.4.9:
   version "0.4.13"
@@ -5693,6 +5698,18 @@ sockjs-client@1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/sockjs-client/-/sockjs-client-1.3.0.tgz#12fc9d6cb663da5739d3dc5fb6e8687da95cb177"
   integrity sha512-R9jxEzhnnrdxLCNln0xg5uGHqMnkhPSTzUZH2eXcR03S/On9Yvoq2wyUZILRUhZCNVu2PmwWVoyuiPz8th8zbg==
+  dependencies:
+    debug "^3.2.5"
+    eventsource "^1.0.7"
+    faye-websocket "~0.11.1"
+    inherits "^2.0.3"
+    json3 "^3.3.2"
+    url-parse "^1.4.3"
+
+sockjs-client@^1.3.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/sockjs-client/-/sockjs-client-1.4.0.tgz#c9f2568e19c8fd8173b4997ea3420e0bb306c7d5"
+  integrity sha512-5zaLyO8/nri5cua0VtOrFXBPK1jbL4+1cebT/mmKA1E1ZXOvJrII75bPu0l0k843G/+iAbhEqzyKr0w/eCCj7g==
   dependencies:
     debug "^3.2.5"
     eventsource "^1.0.7"
